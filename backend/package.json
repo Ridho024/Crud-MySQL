@@ -1,0 +1,21 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "p"
+  },
+  "author": "Ridho024",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.1",
+    "express-fileupload": "^1.5.1",
+    "fs": "^0.0.1-security",
+    "mysql2": "^3.11.3",
+    "path": "^0.12.7",
+    "sequelize": "^6.37.4"
+  },
+  "type": "module"
+}
