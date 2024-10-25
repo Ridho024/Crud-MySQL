@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Link, useParams } from "react-router-dom";
+import ReactPaginate from "react-paginate";
 
 const UserList = () => {
   const [users, setUsers] = useState([]);
@@ -29,6 +30,22 @@ const UserList = () => {
     setRows(response.data.totalRows);
   };
 
+  const changePage = async ({ selected }) => {
+    setPage(selected);
+    if (selected === 9) {
+      setMsg("Jika tidak menemukan data yang anda cari, silahkan cari data dengan kata kunci spesifik");
+    } else {
+      setMsg("");
+    }
+  };
+
+  const searchData = (e) => {
+    e.preventDefault();
+    setPage(0);
+    setMsg("");
+    setKeyword(query);
+  };
+
   const deleteUser = async (id) => {
     try {
       await axios.delete(`http://localhost:5000/user/${id}`);
@@ -41,13 +58,26 @@ const UserList = () => {
   return (
     <div className="columns mt-5 is-centered">
       <div className="column is-half">
-        <div>
+        <form onSubmit={searchData} className="mb-5">
+          <div className="field has-addons">
+            <div className="control is-expanded">
+              <input type="text" className="input" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Find something here..." />
+            </div>
+            <div className="control">
+              <button type="submit" className="button is-success">
+                search
+              </button>
+            </div>
+          </div>
+        </form>
+
+        <div className="mb-5">
           <Link to={"user/add"} className="button is-success">
             Add New
           </Link>
         </div>
 
-        <tabel className="table is-striped is-fullwidth">
+        <tabel className="table is-striped is-bordered is-fullwidth mb-5">
           <thead>
             <tr>
               <th>No</th>
@@ -64,9 +94,7 @@ const UserList = () => {
                 <td>{index + 1}</td>
                 <td>
                   <div className="card-image">
-                    <figure className="image is-64x64">
-                      <img src={user.url} alt="Image" />
-                    </figure>
+                    <img src={user.url} alt="Image" className="image is-64x64" />
                   </div>
                 </td>
                 <td>{user.name}</td>
@@ -85,6 +113,28 @@ const UserList = () => {
             ))}
           </tbody>
         </tabel>
+
+        <p className="mt-5 has-text-centered mb-3">
+          Total Rows: {rows} || Page: {rows ? page + 1 : 0} of {pages}
+        </p>
+
+        <p className="has-text-centered has-text-danger mb-3">{msg}</p>
+
+        <nav key={rows} className="pagination is-centered" role="navigation" aria-label="pagination">
+          <ReactPaginate
+            previousLabel={"< Prev"}
+            nextLabel={"Next >"}
+            pageCount={Math.min(10, pages)} // Dibuat begini karene tidak mungkin user mencari satu persatu sampai page yang banyak
+            onPageChange={changePage}
+            containerClassName={"pagination-list"}
+            pageLinkClassName={"pagination-link"}
+            previousLinkName={"pagination-previous"}
+            nextLinkClassName={"pagination-next"}
+            activeLinkClassName={"pagination-link is-current"}
+            disabledLinkClassName={"pagination-link is-disabled"}
+          />
+        </nav>
+
       </div>
     </div>
   );
